@@ -1,0 +1,264 @@
+<!-- 轮播 -->
+<style>
+    .carousel {
+        height: 150px;
+    }
+    .carousel-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    .carousel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    }
+    .carousel-item.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .carousel-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        margin: 0 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .carousel-indicator.active {
+        background-color: white;
+    }
+
+    .subscribe-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+}
+.inviteStatus {
+    display: none;
+}
+</style>
+ 
+ <!-- 主要内容区 -->
+ <main class="p-4">
+    <!-- 公告栏 -->
+     <!-- <div id="noticeList"></div> -->
+     <div id="noticeCarousel" class="carousel bg-orange-500 text-white p-4 rounded-lg mb-4 relative overflow-hidden">
+        <!-- <div class="carousel-inner">
+            <div class="carousel-item active">
+                <span class="absolute top-0 left-0 bg-red-600 text-xs px-2 py-1 rounded">公告</span>
+                <h2 class="text-xl sm:text-2xl font-bold mt-10">邀请好友返利20%。</h2>
+                <p class="mt-2 text-sm">2023-06-03</p>
+            </div>
+            <div class="carousel-item">
+                <span class="absolute top-0 left-0 bg-red-600 text-xs px-2 py-1 rounded">公告</span>
+                <h2 class="text-xl sm:text-2xl font-bold mt-10">新增多个高速节点。</h2>
+                <p class="mt-2 text-sm">2023-06-10</p>
+            </div>
+            <div class="carousel-item">
+                <span class="absolute top-0 left-0 bg-red-600 text-xs px-2 py-1 rounded">公告</span>
+                <h2 class="text-xl sm:text-2xl font-bold mt-10">端午节优惠活动开始。</h2>
+                <p class="mt-2 text-sm">2023-06-15</p>
+            </div>
+        </div>
+        <div class="carousel-indicators absolute bottom-2 left-0 right-0 flex justify-center">
+            <span class="carousel-indicator active" data-index="0"></span>
+            <span class="carousel-indicator" data-index="1"></span>
+            <span class="carousel-indicator" data-index="2"></span>
+        </div> -->
+    </div>
+    
+ <div class="my-4">
+     <button onclick="initPrice()" class="btn-adaptive w-full py-8 text-2xl bg-blue-600 hover:bg-blue-700 transition duration-300 ease-in-out transform hover:-translate-y-2 shadow-xl rounded-lg">
+         <i class="fas fa-shopping-cart icon-adaptive text-3xl mr-3"></i><span class="text-adaptive font-bold">线路购买</span>
+     </button>
+ </div>
+    
+    
+
+ <div class="bg-white rounded-lg p-6 mb-6 shadow-sm">
+     <h3 class="text-2xl font-bold mb-6 text-gray-800">账户概览</h3>
+     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+         <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">余额</span>
+             <span class="text-lg font-semibold text-indigo-600" id="balance">0</span>
+         </div>
+         <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">佣金</span>
+             <span class="text-lg font-semibold text-green-600" id="inviteBalance">0</span>
+         </div>
+         <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">订单</span>
+             <span class="text-lg font-semibold text-blue-600" id="orderNum">0</span>
+         </div>
+         <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">节点</span>
+             <span class="text-lg font-semibold text-purple-600" id="nodeNum">0</span>
+         </div>
+         <div class="inviteStatus flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">佣金比例</span>
+             <span class="text-lg font-semibold text-orange-600" id="inviteRate">0</span>
+         </div>
+         <div class="inviteStatus flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">邀请人数</span>
+             <span class="text-lg font-semibold text-teal-600" id="inviteNum">0</span>
+         </div>
+         <div class="inviteStatus flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">待发佣金</span>
+             <span class="text-lg font-semibold text-red-600" id="pendingInviteBalance">0</span>
+         </div>
+         <div class="inviteStatus flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+             <span class="text-gray-600">累计佣金</span>
+             <span class="text-lg font-semibold text-yellow-600" id="totalInviteBalance">0</span>
+         </div>
+     </div>
+ </div>
+    <!-- 按钮区域 -->
+<div class="bg-white rounded-lg p-4 sm:p-6 mb-6 shadow-sm">
+    <div class="flex flex-wrap justify-between items-center gap-2 sm:gap-4">
+        <button onclick="toggleRechargeModal()" class="btn-adaptive">
+            <i class="fas fa-wallet icon-adaptive"></i><span class="text-adaptive">充值</span>
+        </button>
+        <button onclick="toggleInviteBalanceButtonModal()" class="inviteStatus btn-adaptive" style="display: none;">
+            <i class="fas fa-hand-holding-usd icon-adaptive"></i><span class="text-adaptive">提现</span>
+        </button>
+        <button onclick="getApplyInviteInfo()" class="inviteStatus applyInviteButton btn-adaptive" style="display: none;">
+            <i class="fas fa-user-plus icon-adaptive"></i><span class="text-adaptive"  id="applyInviteButtonText">申请推广</span>
+        </button>
+        <button onclick="showInviteQrCode()" class="inviteStatus btn-adaptive" style="display: none;">
+            <i class="fas fa-user-plus icon-adaptive"></i><span class="text-adaptive">邀请</span>
+        </button>
+    </div>
+</div>
+
+
+
+     <!-- 我的订阅 -->
+     <div class="rounded-lg p-1 mb-6" id="subscribeList">
+         <input id="uuid" value="" style="display: none;">
+         <h3 class="text-2xl font-bold mb-6 text-gray-800">我的线路</h3>
+        <!-- 订阅列表区域 -->
+
+    </div>
+
+
+     <!-- 捷径 -->
+     <div class="bg-white rounded-lg p-6 ">
+         <h3 class="text-xl font-bold mb-4">捷径</h3>
+         <ul class="divide-y divide-gray-200">
+             <li class="py-4 useTutorialLink" >
+                 <div class="flex items-center">
+                     <span class="mr-4 text-3xl">📘</span>
+                     <div>
+                         <h4 class="font-semibold text-lg">查看教程</h4>
+                         <p class="text-gray-600">学习如何使用</p>
+                     </div>
+                 </div>
+             </li>
+             <li class="py-4 hidden">
+                 <div class="flex items-center">
+                     <span class="mr-4 text-3xl">📡</span>
+                     <div>
+                         <h4 class="font-semibold text-lg">一键订阅</h4>
+                         <p class="text-gray-600">快速将节点导入对应客户端进行使用</p>
+                     </div>
+                 </div>
+             </li>
+             <li class="py-4 hidden">
+                 <div class="flex items-center">
+                     <span class="mr-4 text-3xl">💰</span>
+                     <div>
+                         <h4 class="font-semibold text-lg">续费订阅</h4>
+                         <p class="text-gray-600">对您当前的订阅进行续费</p>
+                     </div>
+                 </div>
+             </li>
+             <li class="py-4 hidden">
+                 <div class="flex items-center">
+                     <span class="mr-4 text-3xl">❓</span>
+                     <div>
+                         <h4 class="font-semibold text-lg">遇到问题</h4>
+                         <p class="text-gray-600">遇到问题可以通过工单与我们沟通</p>
+                     </div>
+                 </div>
+             </li>
+         </ul>
+     </div>
+ </main>
+
+ <!-- 三个按钮样式 -->
+ <style>
+    .btn-adaptive {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #3b82f6; /* blue-500 */
+        color: white;
+        font-weight: bold;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        min-width: 80px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-adaptive:nth-child(2) {
+        background-color: #eab308; /* yellow-500 */
+    }
+
+    .btn-adaptive:nth-child(3) {
+        background-color: #22c55e; /* green-500 */
+    }
+
+    .btn-adaptive:hover {
+        filter: brightness(110%);
+    }
+
+    .icon-adaptive {
+        margin-right: 0.25rem;
+        font-size: 1rem;
+    }
+
+    .text-adaptive {
+        font-size: 0.875rem;
+    }
+
+    @media (max-width: 400px) {
+        .btn-adaptive {
+            padding: 0.375rem;
+            min-width: 60px;
+        }
+
+        .icon-adaptive {
+            font-size: 0.875rem;
+            margin-right: 0.125rem;
+        }
+
+        .text-adaptive {
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 320px) {
+        .btn-adaptive {
+            padding: 0.25rem;
+            min-width: 50px;
+        }
+
+        .icon-adaptive {
+            font-size: 0.75rem;
+            margin-right: 0.125rem;
+        }
+
+        .text-adaptive {
+            font-size: 0.625rem;
+        }
+    }
+</style>

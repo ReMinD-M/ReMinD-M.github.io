@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <div id="rechargeModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="p-5 border w-96 shadow-lg rounded-md bg-white flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">余额充值</h3>
+                <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-2"
+                    onclick="toggleRechargeModal()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4 flex flex-wrap gap-2">
+
+                <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-900 hover:bg-gray-300"
+                    onclick="selectAmount(10)">10 元</button>
+                <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-900 hover:bg-gray-300"
+                    onclick="selectAmount(20)">20 元</button>
+                <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-900 hover:bg-gray-300"
+                    onclick="selectAmount(50)">50 元</button>
+                <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-900 hover:bg-gray-300"
+                    onclick="selectAmount(100)">100 元</button>
+            </div>
+            <div class="mb-4 " id="customAmountContainer">
+                <label for="customAmount" class="block text-sm font-medium text-gray-700">输入自定义金额：</label>
+                <input type="number" id="customAmount" min="1"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="例如:100" />
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button class="px-4 bg-blue-500 p-2 rounded-lg text-white hover:bg-blue-400"
+                    id="confirmRechargeButton">确认充值</button>
+            </div>
+        </div>
+    </div>
+
+    {/* 充值二维码 */}
+    <div id="orderId" style="display: none; pointer-events: none; justify-content: center;"></div>
+    <div class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center overflow-y-auto h-full w-full"
+        id="payCodeModal" style="z-index: 10000;">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-medium text-gray-900">微信扫码支付</h4>
+                <button
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                    onclick="togglePayCodeModal()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-grow mb-4 flex items-center justify-center">
+                <div class="bg-gray-200 p-5 rounded-lg">
+                    <div id="pay_qrcode_modal" class="bg-black w-32 h-32"></div>
+                </div>
+            </div>
+            <div class="text-center">
+                <span class="block text-red-500" id="payAmount"
+                    style="font-size: xx-large;font-weight: bold;padding-bottom: 20px;"></span>
+                <span class="block text-red-500" id="payTime"></span>
+                <span class="block text-red-500 mt-4 text-xl" id="payTip">手机下单用户保存二维码后<br>使用微信扫码完成充值</span>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button class="paySuccessButton px-4 bg-blue-500 p-2 rounded-lg text-white hover:bg-blue-400"
+                    id="paySuccessButton">付款完成</button>
+            </div>
+        </div>
+    </div>
+
+    {/* 邀请二维码 */}
+    <div class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center overflow-y-auto h-full w-full"
+        id="inviteQrModal" style="z-index: 10000;">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-medium text-gray-900" id="sub_title">邀请二维码</h4>
+                <span id="subscribeUrl" style="display: none;"></span>
+
+                <button
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                    onclick="toggleInviteQrModal()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-grow mb-4 flex items-center justify-center">
+                <div class="bg-gray-200 p-5 rounded-lg">
+                    <div id="invite_qrcode_modal" class="bg-black w-32 h-32"></div>
+                </div>
+            </div>
+            <div class="text-center">
+                <span class="block text-red-500" id="inviteCode"
+                    style="font-size: x-large;font-weight: bold;padding: 20px;"></span>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button class="px-4 bg-blue-500 p-2 rounded-lg text-white hover:bg-blue-400"
+                    id="copyInviteCodeButton">复制邀请链接</button>
+            </div>
+        </div>
+    </div>
+
+    {/* 选择划转或提现 */}
+    <div id="inviteBalanceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+
+        <div class="bg-white p-8 md:p-12 rounded-lg shadow-lg relative max-w-2xl">
+            <button onclick="toggleInviteBalanceButtonModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">选择佣金划转或提现</h3>
+            <div class="flex justify-between space-x-4">
+                <button onclick="toggleTransferModalModal()"
+                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">佣金划转</button>
+                <button onclick="toggleWithdrawModalModal()"
+                    class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">佣金提现</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="transferModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="toggleTransferModalModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">输入划转金额</h3>
+            <input type="number" maxlength="32" id="transferAmount" min="1"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="输入划转金额">
+            <button id="transferButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">划转</button>
+        </div>
+    </div>
+    <div id="withdrawModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="toggleWithdrawModalModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">提现申请</h3>
+
+            <div class="mb-4">
+                <label for="withdrawMethod" class="block text-sm font-medium text-gray-700 mb-2">选择支付方式</label>
+                <select id="withdrawMethod"
+                    class="w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="alipay">支付宝</option>
+                    <option value="usdt-trc20">USDT (Trc20)</option>
+                </select>
+            </div>
+
+            <input type="text" maxlength="128" id="withdrawAccount"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="请输入提现账号">
+
+            <button id="withdrawButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">提现</button>
+        </div>
+    </div>
+
+    {/* 订阅二维码 */}
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full justify-center items-center"
+        id="myModal" style="z-index: 10000;">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-medium text-gray-900" id="sub_title">订阅二维码</h4>
+                <span id="subscribeUrl" style="display: none;"></span>
+                <button
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                    onclick="closeModal()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-grow mb-4 flex items-center justify-center">
+                <div class="bg-gray-200 p-5 rounded-lg">
+                    <div id="sub_qrcode_modal" class="bg-black w-32 h-32"></div>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button class="px-4 bg-blue-500 p-2 rounded-lg text-white hover:bg-blue-400" id="copyButton">复制</button>
+            </div>
+        </div>
+    </div>
+    {/* 编辑个人信息 */}
+    <!-- <div class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full justify-center items-center"
+        id="editProfileModal1" style="z-index: 10000;">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-medium text-gray-900">编辑个人信息</h4>
+                <button
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                    onclick="closeEditModal()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-grow mb-4 flex flex-col items-center justify-center">
+               
+                <div class="mb-4">
+                    <input type="text" id="new_username" maxlength="8" style=" text-align: center;"
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="输入你的用户名">
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button class="px-4 bg-blue-500 p-2 rounded-lg text-white hover:bg-blue-400"
+                    id="updateProfileButton">修改</button>
+            </div>
+        </div>
+    </div> </div> -->
+    <div id="editProfileModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="closeEditModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">修改用户名</h3>
+            <input type="text" maxlength="8" id="new_username"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="输入用户名">
+            <button id="updateProfileButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">修改</button>
+        </div>
+    </div>
+
+    
+    {/* 申请推广 */}
+    <div id="applyPromotionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative max-w-md w-full">
+            <button onclick="toggleApplyPromotionModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">申请推广</h3>
+            <!-- <input type="text" id="promotionName" maxlength="20"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="姓名">
+            <input type="text" id="promotionIdCard" maxlength="18"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="身份证号">
+            <input type="tel" id="promotionPhone" maxlength="11"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="手机号"> -->
+                <input type="text" id="promotionWechat" maxlength="20"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="微信号">
+            <input type="text" id="promotionCompany" maxlength="50"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="公司名称">
+                <div class="flex flex-col items-center">
+                    <span id="promotionReason" style="display: none;color: red;"></span>
+                </div><br>
+            <button id="applyPromotionButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">提交申请</button>
+        </div>
+    </div>
+
+
+
+    {/* 头像选择 */}
+    <div id="avatarModal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white flex flex-col">
+            <div class="mb-4">
+                <ul id="avatarTab" class="flex flex-wrap -mb-px text-center justify-center">
+                    <li class="mr-2">
+                        <button
+                            class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 focus:outline-none focus:text-blue-600 focus:border-blue-600"
+                            data-start="1" data-end="10">卡通</button>
+                    </li>
+                    <li class="mr-2">
+                        <button
+                            class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 focus:outline-none focus:text-blue-600 focus:border-blue-600"
+                            data-start="11" data-end="20">动漫</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="flex-grow mb-4 flex flex-wrap justify-center" id="avatarList">
+            </div>
+            <button
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center absolute top-0 right-0 m-4"
+                onclick="$('#avatarModal').addClass('hidden').removeClass('flex');">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    {/* 兑换code */}
+    <div id="redeemCodeDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="closeCodeModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">输入兑换码</h3>
+            <input type="text" maxlength="32" id="redeemCodeInput"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="输入兑换码">
+            <button id="redeemCode"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">兑换</button>
+        </div>
+    </div>
+    {/* 修改订阅名称 */}
+    <div id="updateNameDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="closeUpdateNameModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">修改线路名称</h3>
+            <input type="text" maxlength="32" id="subscribeId" class="hidden">
+            <input type="text" maxlength="8" id="newSubscribeNameInput"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="输入名称">
+            <button id="updateNameDivButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">修改</button>
+        </div>
+    </div>
+
+    {/* 购买 */}
+    <!-- <div id="buyDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-8 md:p-12 rounded-lg shadow-lg relative max-w-2xl">
+            <button onclick="toggleBuyModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900" id="buy_title">是否购买该线路？</h3>
+            <div class="flex justify-between space-x-4">
+                <input id="choose_id" value="" style="display: none;">
+                <input id="choose_name" value="" style="display: none;">
+                <button onclick="confirmBuy()"
+                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">确定</button>
+                <button onclick="toggleBuyModal()"
+                    class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">取消</button>
+            </div>
+        </div>
+    </div> -->
+    <div id="buyDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-8 md:p-12 rounded-lg shadow-lg relative max-w-3xl w-full">
+            <button onclick="toggleBuyModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-900" id="buy_title">购买线路</h2>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2 text-gray-900">线路名称:</h3>
+                <p id="buy_package_name" class="text-xl font-bold text-blue-600"></p>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2 text-gray-900">付款周期:</h3>
+                <div class="relative">
+                    <select id="paymentCycle"
+                        class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500"">
+                        <option value=" monthly">月付 (20% 折扣)</option>
+                        <option value="quarterly">季付 (30% 折扣)</option>
+                        <option value="semiannual">半年付 (60% 折扣)</option>
+                        <option value="annual">年付 (80% 折扣)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2 text-gray-900">总额:</h3>
+                <p id="totalAmount" class="text-2xl font-bold text-green-600"></p>
+            </div>
+            <input id="choose_id" value="" style="display: none;">
+            <input id="choose_cycle" value="" style="display: none;">
+            <div class="flex justify-between space-x-4">
+                <button id="confirmBuyButton" onclick="confirmBuy()"
+                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                    确认购买
+                </button>
+                <button onclick="toggleBuyModal()"
+                    class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    {/* 充值流量 */}
+    <div id="rechargeDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-8 md:p-12 rounded-lg shadow-lg relative max-w-2xl">
+            <button onclick="toggleRechargeModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900" id="recharge_buy_title">是否充值该线路？</h3>
+            <div class="flex justify-between space-x-4">
+                <input id="recharge_choose_id" value="" style="display: none;">
+                <input id="recharge_choose_name" value="" style="display: none;">
+                <button onclick="confirmRechargeSubscribe()"
+                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">确定</button>
+                <button onclick="toggleRechargeModal()"
+                    class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">取消</button>
+            </div>
+        </div>
+    </div>
+    {/* 更换IP */}
+    <div id="updateIpModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-8 md:p-12 rounded-lg shadow-lg relative max-w-2xl">
+            <button onclick="toggleUpdateIpModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900" id="update_ip_title">每个线路月周期首次免费,之后每次20元,确定更换吗？</h3>
+            <div class="flex justify-between space-x-4">
+                <input id="update_ip_choose_id" value="" style="display: none;">
+                <button onclick="confirmUpdateIp()"
+                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">更换</button>
+                <button onclick="toggleUpdateIpModal()"
+                    class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">取消</button>
+            </div>
+        </div>
+    </div>
+    {/* 修改密码 */}
+    <div id="changePasswordDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative w-96">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-medium text-gray-900">修改密码</h4>
+                <button
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                    onclick="closeChangePasswordDiv()">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <input type="email" id="email" disabled
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="邮箱">
+            </div>
+
+            <div class="mb-4 flex  emailValid" style="display: none;">
+                <input type="text" id="code" maxlength="8"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    style="flex-basis: 70%;" placeholder="验证码">
+                <button class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:text-sm"
+                    id="sendCodeButton" style="line-height:normal;">发送</button>
+            </div>
+            <div class="mb-4 flex">
+                <input type="password" id="new_password" autocomplete="new-password" maxlength="12"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="新密码(18位以内)">
+            </div>
+
+            <button id="updatePasswordButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">修改</button>
+        </div>
+    </div>
+
+</body>
+
+</html>

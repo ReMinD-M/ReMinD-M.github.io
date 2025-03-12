@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/component.css" />
+    <script src="../common/jquery-3.5.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '../modal.html',
+                method: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    var $modalContent = $('<div>').html(data);
+                    $('body').append($modalContent.children());
+                    // 触发自定义事件,表示modal.html已加载完成
+                    $(document).trigger('modalLoaded');
+                },
+                error: function (xhr, status, error) {
+                    console.error('无法加载modal.html:', error);
+                }
+            });
+            $.ajax({
+				url: '/protocol.html',
+				method: 'GET',
+				dataType: 'text',
+				success: function (data) {
+					var $modalContent = $('<div>').html(data);
+					$('body').append($modalContent.children());
+					// 触发自定义事件,表示modal.html已加载完成
+					$(document).trigger('protocolLoaded');
+				},
+				error: function (xhr, status, error) {
+					console.error('无法加载protocol.html:', error);
+				}
+			});
+        });
+    </script>
+    <script src="../js/config.js"></script>
+    <script src="../js/base.js"></script>
+    <script src="../js/owl.js"></script>
+    <link href="https://lib.baomitu.com/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../common/layer.3.5.1/theme/default/layer.css">
+    <script src="../common/layer.3.5.1/layer.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Alegreya+Sans:400,700,800' rel='stylesheet' type='text/css'>
+
+    <script src="../js/user.js"></script>
+    <script src="../js/order.js"></script>
+    <script src="../js/listen.js"></script>
+    <script src="../common/qrcode.min.js"></script>
+    <script src="js/center.js"></script>
+    <script src="js/order.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .bg-teal-500 {
+            background-color: #4db6ac;
+        }
+
+        .text-teal-500 {
+            color: #4db6ac;
+        }
+
+        .bg-orange-500 {
+            background-color: #ff9800;
+        }
+
+        .side-menu {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        .side-menu.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .user-menu {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+
+        .user-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .side-menu.hidden {
+            transform: translateX(-100%);
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        .menu-group-title {
+            font-size: 12px;
+            color: #888;
+            padding: 8px 16px;
+            margin-top: 16px;
+        }
+
+        .close-button {
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* 黑暗模式样式 */
+        body.dark {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+
+        body.dark .bg-teal-500 {
+            background-color: #2c7a7b;
+        }
+
+        body.dark .text-teal-500 {
+            color: #4fd1c5;
+        }
+
+        body.dark .bg-white {
+            background-color: #2d3748;
+        }
+
+        body.dark .text-gray-700,
+        body.dark .text-gray-600,
+        body.dark .text-gray-800,
+        body.dark .text-black {
+            color: #e2e8f0;
+        }
+
+        body.dark .bg-gray-100 {
+            background-color: #4a5568;
+        }
+
+        body.dark .hover\:bg-gray-100:hover {
+            background-color: #718096;
+        }
+
+        body.dark .side-menu {
+            background-color: #2d3748;
+        }
+
+        body.dark .menu-group-title {
+            color: #a0aec0;
+        }
+
+        body.dark .close-button {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark .user-menu {
+            background-color: #2d3748;
+            color: #e2e8f0;
+        }
+
+        body.dark .user-menu a {
+            color: #e2e8f0;
+        }
+
+        body.dark .user-menu a:hover {
+            background-color: #4a5568;
+        }
+
+        /* 修改余额、订单等文字颜色 */
+        body.dark .text-gray-600 {
+            color: #a0aec0;
+        }
+    </style>
+    
+</head>
+
+<body class="bg-gray-100">
+    <!-- 顶部导航栏 -->
+    <header class="bg-blue-600 text-white p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+        <button type="button" class="text-2xl" onclick="toggleSideMenu()"><i class="fa fa-bars"></i></button>
+        <h1 class="text-xl font-bold" id="title">仪表盘</h1>
+        <div class="flex items-center">
+            <button id="themeToggle" class="mr-4" onclick="toggleTheme()" style="display: none;">
+                <i id="themeIcon" class="fas fa-sun"></i>
+            </button>
+            <div class="relative">
+                <button onclick="toggleUserMenu()"
+                    class="rounded-full bg-white w-7 h-7 flex items-center justify-center text-teal-500">
+                    <i class="fas fa-user text-sm"></i>
+                </button>
+                <div id="userMenu" class="user-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onclick="showEditProfileModal()">修改昵称</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onclick="showChangePasswordDiv()">修改密码</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onclick="logout()">登出</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="h-16"></div> <!-- 添加间隔 -->
+
+    <!-- 主要内容区域 -->
+     
+    <main class="p-4" id="mobile-iframe-content">
+
+    </main>
+
+    <!-- 底部固定按钮 -->
+    <!-- <div class="fixed bottom-4 right-4 flex flex-col items-end">
+        <button class="bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center mb-2">
+            <span class="text-2xl">✈️</span>
+        </button>
+        <button class="bg-yellow-500 text-white rounded-full w-12 h-12 flex items-center justify-center">
+            <span class="text-2xl">💬</span>
+        </button>
+    </div> -->
+
+    <!-- 侧边菜单 -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" id="overlay" onclick="toggleSideMenu()">
+        <div class="side-menu bg-white w-64 h-full transform -translate-x-full transition-transform duration-300 ease-in-out"
+            id="sideMenu" onclick="event.stopPropagation()">
+            <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+                <h2 class="text-xl font-bold site-title">系统前台</h2>
+                <button class="close-button" onclick="toggleSideMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mt-4">
+                <div class="menu-item bg-gray-100" data-action="initHome">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>仪表盘</span>
+                </div>
+                <div class="menu-item useTutorialLink">
+                    <i class="fas fa-book"></i>
+                    <span>使用文档</span>
+                </div>
+                <div class="menu-item idShareUrl">
+                    <i class="fas fa-share-alt"></i>
+                    <span>小火箭ID分享页</span>
+                </div>
+                <div class="menu-group-title">订阅</div>
+                <div class="menu-item" data-action="initPrice">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>购买线路</span>
+                </div>
+
+
+                <div class="menu-group-title">财务</div>
+                <div class="menu-item" data-action="initorder">
+                    <i class="fas fa-list-alt"></i>
+                    <span>我的订单</span>
+                </div>
+                <div class="menu-item" data-action="initBilling">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>我的账单</span>
+                </div>
+            </nav>
+            <script>
+                function setActiveMenuItem(element) {
+                    // 移除所有菜单项的背景色
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('bg-gray-100');
+                        item.querySelector('i').classList.remove('text-teal-500');
+                        item.querySelector('span').classList.remove('text-teal-500');
+                    });
+
+                    // 为点击的菜单项添加背景色
+                    element.classList.add('bg-gray-100');
+                    element.querySelector('i').classList.add('text-teal-500');
+                    element.querySelector('span').classList.add('text-teal-500');
+                }
+
+                // 添加事件监听器
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        setActiveMenuItem(this);
+                        const action = this.getAttribute('data-action');
+                        if (action) {
+                            window[action]();
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+
+    <script>
+        function toggleSideMenu() {
+            const overlay = document.getElementById('overlay');
+            const sideMenu = document.getElementById('sideMenu');
+            overlay.classList.toggle('hidden');
+            setTimeout(() => {
+                sideMenu.classList.toggle('active');
+            }, 10);
+        }
+        function closeSideMenu() {
+            const overlay = document.getElementById('overlay');
+            const sideMenu = document.getElementById('sideMenu');
+            overlay.classList.add('hidden');
+            sideMenu.classList.remove('active');
+        }
+        function toggleUserMenu() {
+            const userMenu = document.getElementById('userMenu');
+            userMenu.classList.toggle('active');
+        }
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            body.classList.toggle('dark');
+
+            if (body.classList.contains('dark')) {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+
+            // 保存主题设置到本地存储
+            localStorage.setItem('darkMode', body.classList.contains('dark'));
+        }
+
+        // 页面加载时应用保存的主题设置
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedDarkMode = localStorage.getItem('darkMode');
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+
+            if (savedDarkMode === 'true') {
+                body.classList.add('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                body.classList.remove('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+        });
+
+        // 点击页面其他地方关闭用户菜单
+        document.addEventListener('click', function (event) {
+            const userMenu = document.getElementById('userMenu');
+            const userButton = document.querySelector('button[onclick="toggleUserMenu()"]');
+            if (!userButton.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.remove('active');
+            }
+        });
+    </script>
+    <script>
+      
+
+        // 手动调用初始化函数
+     
+    </script>
+</body>
+
+</html>

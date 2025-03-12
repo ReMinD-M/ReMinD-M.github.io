@@ -1,0 +1,282 @@
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full justify-center items-center"
+    id="protocolModal" style="z-index: 10000;">
+    <div class="relative p-4 border shadow-lg rounded-md bg-white flex flex-col" style="width: 500px; height: 600px;">
+        <!-- 标题和关闭按钮 -->
+        <div class="flex justify-between items-center mb-3">
+            <h4 class="text-lg font-medium text-gray-900">查看线路代码</h4>
+            <button
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                onclick="closeProtocolModal()">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+        <input style="display: none;" id="updateClientPasswordChoseSubscribeId" value="">
+        <!-- 协议选择卡片 -->
+        <div class="flex gap-1 mb-3">
+            <button onclick="switchProtocol('vmess')"
+                class="protocol-tab px-3 py-1.5 rounded-lg bg-blue-500 text-white hover:bg-blue-400 text-sm">VMess</button>
+            <button onclick="switchProtocol('shadowsocks')"
+                class="protocol-tab px-3 py-1.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm">Shadowsocks</button>
+            <button onclick="switchProtocol('socks5')"
+                class="protocol-tab px-3 py-1.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm">Socks5</button>
+        </div>
+
+        <!-- 协议内容区域 -->
+        <div class="flex-grow flex flex-col overflow-hidden">
+            <!-- VMess 和 Shadowsocks 专用区域 -->
+            <div id="standardProtocolContainer" class="flex flex-col justify-center h-full">
+                <div class="font-medium text-center text-blue-600 text-sm mb-3">连接信息</div>
+                
+                <!-- 代码显示区域 -->
+                <div id="codeContainer" class="bg-gray-100 p-3 rounded-lg mb-5">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center ml-auto">
+                            <a href="#" onclick="updateClientPassword()" class="text-xs text-blue-600 hover:text-blue-800 mr-1">更换协议密码</a>
+                            <span class="text-xs text-gray-500 cursor-help" title="如果协议泄露可以进行更换">?</span>
+                        </div>
+                    </div>
+                    <code id="protocolCode" class="break-all text-xs block whitespace-pre-wrap bg-white p-2 rounded border border-gray-200 max-h-28 overflow-y-auto"></code>
+                </div>
+
+                <!-- 二维码区域 -->
+                <div class="flex flex-col items-center">
+                    <div class="text-xs text-gray-500 mb-1">扫描二维码</div>
+                    <div id="qrcodeContainer" class="bg-gray-200 p-3 rounded-lg">
+                        <div id="protocolQrcode" class="bg-white w-36 h-36"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Socks5 专用显示区域 -->
+            <div id="socks5Container" class="hidden flex-col justify-center h-full">
+                <!-- <div class="font-medium text-center text-blue-600 text-sm mb-3">连接信息</div> -->
+                
+                <!-- 直连节点区域 -->
+                <div class="bg-gray-100 p-3 rounded-lg mb-5">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center ml-auto">
+                            <a href="#" onclick="updateClientPassword()" class="text-xs text-blue-600 hover:text-blue-800 mr-1">更换协议密码</a>
+                            <span class="text-xs text-gray-500 cursor-help" title="如果协议泄露可以进行更换">?</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500 mb-1 text-center">无加速</div>
+                    <div id="socks5Direct" class="bg-white p-3 rounded border border-gray-200">
+                        <div class="flex flex-col space-y-3 text-sm">
+                            <div>地址: <span id="directIp" class="font-mono"></span></div>
+                            <div>端口: <span id="directPort" class="font-mono"></span></div>
+                            <div>用户名: <span id="directUser" class="font-mono"></span></div>
+                            <div>密码: <span id="directPass" class="font-mono"></span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 中转节点区域 -->
+                <div class="bg-gray-100 p-3 rounded-lg">
+                    <div class="text-xs text-gray-500 mb-1 text-center">有加速</div>
+                    <div id="socks5Transit" class="bg-white p-3 rounded border border-gray-200">
+                        <div class="flex flex-col space-y-3 text-sm">
+                            <div>地址: <span id="transitIp" class="font-mono"></span></div>
+                            <div>端口: <span id="transitPort" class="font-mono"></span></div>
+                            <div>用户名: <span id="transitUser" class="font-mono"></span></div>
+                            <div>密码: <span id="transitPass" class="font-mono"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="mt-3 flex justify-end">
+            <button class="px-3 bg-blue-500 p-1.5 rounded-lg text-white hover:bg-blue-400 text-sm" onclick="copyProtocolCode()">复制</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProtocol = 'vmess';
+let socks5Data = {
+    direct: null,
+    transit: null
+};
+
+function showProtocolModal(vmessCode, shadowsocksCode, socks5Code,subscribeId) {
+    const modal = document.getElementById('protocolModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // 存储协议代码
+    window.protocolCodes = {
+        vmess: vmessCode,
+        shadowsocks: shadowsocksCode,
+        socks5: socks5Code
+    };
+    
+    // 解析 socks5 数据（假设是通过 fetchAndShowProtocols 函数传入的格式化文本）
+    parseSocks5Data(socks5Code);
+    $('#updateClientPasswordChoseSubscribeId').val(subscribeId);
+    switchProtocol('vmess');
+}
+
+function parseSocks5Data(socks5Text) {
+    // 重置 socks5 数据
+    socks5Data = {
+        direct: null,
+        transit: null
+    };
+    
+    if (!socks5Text) return;
+    
+    // 使用正则表达式或简单解析提取直连和中转节点数据
+    const sections = socks5Text.split('\n\n');
+    
+    if (sections.length > 0 && sections[0].includes('直连节点')) {
+        const directLines = sections[0].split('\n');
+        const directData = {};
+        
+        directLines.forEach(line => {
+            if (line.includes('IP:')) directData.ip = line.split('IP:')[1].trim();
+            if (line.includes('端口:')) directData.port = line.split('端口:')[1].trim();
+            if (line.includes('用户名:')) directData.user = line.split('用户名:')[1].trim();
+            if (line.includes('密码:')) directData.pass = line.split('密码:')[1].trim();
+        });
+        
+        if (directData.ip) socks5Data.direct = directData;
+    }
+    
+    if (sections.length > 1 && sections[1].includes('中转节点')) {
+        const transitLines = sections[1].split('\n');
+        const transitData = {};
+        
+        transitLines.forEach(line => {
+            if (line.includes('IP:')) transitData.ip = line.split('IP:')[1].trim();
+            if (line.includes('端口:')) transitData.port = line.split('端口:')[1].trim();
+            if (line.includes('用户名:')) transitData.user = line.split('用户名:')[1].trim();
+            if (line.includes('密码:')) transitData.pass = line.split('密码:')[1].trim();
+        });
+        
+        if (transitData.ip) socks5Data.transit = transitData;
+    }
+}
+
+function closeProtocolModal() {
+    const modal = document.getElementById('protocolModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function switchProtocol(protocol) {
+    currentProtocol = protocol;
+    
+    // 更新标签样式
+    document.querySelectorAll('.protocol-tab').forEach(tab => {
+        if (tab.textContent.toLowerCase() === protocol) {
+            tab.classList.remove('bg-gray-200', 'text-gray-700');
+            tab.classList.add('bg-blue-500', 'text-white');
+        } else {
+            tab.classList.remove('bg-blue-500', 'text-white');
+            tab.classList.add('bg-gray-200', 'text-gray-700');
+        }
+    });
+    
+    // 显示对应协议代码
+    const codeElement = document.getElementById('protocolCode');
+    
+    // 控制各区域的显示
+    const standardProtocolContainer = document.getElementById('standardProtocolContainer');
+    const socks5Container = document.getElementById('socks5Container');
+    
+    if (protocol === 'socks5') {
+        // Socks5 模式下隐藏标准协议区，显示专用区域
+        standardProtocolContainer.style.display = 'none';
+        socks5Container.style.display = 'flex';
+        
+        // 更新 socks5 显示内容
+        updateSocks5Display();
+    } else {
+        // 其他协议模式下显示标准协议区
+        standardProtocolContainer.style.display = 'flex';
+        socks5Container.style.display = 'none';
+        
+        // 更新代码内容
+        codeElement.textContent = window.protocolCodes[protocol] || '';
+        
+        // 更新二维码
+        const qrcode = document.getElementById('protocolQrcode');
+        qrcode.innerHTML = ''; // 清除旧的二维码
+        
+        // 尝试生成二维码，处理可能的错误
+        try {
+            new QRCode(qrcode, {
+                text: window.protocolCodes[protocol] || '',
+                width: 144,
+                height: 144,
+                correctLevel: QRCode.CorrectLevel.L  // 使用最低级别的纠错以允许存储更多数据
+            });
+        } catch (error) {
+            console.error("QR code generation error:", error);
+            qrcode.innerHTML = '<div class="flex items-center justify-center w-full h-full text-center text-red-500 text-xs">协议内容太长，<br>无法生成二维码</div>';
+        }
+    }
+}
+
+function updateSocks5Display() {
+    // 直连节点显示
+    const directDiv = document.getElementById('socks5Direct');
+    if (socks5Data.direct) {
+        directDiv.style.display = 'block';
+        document.getElementById('directIp').textContent = socks5Data.direct.ip || '';
+        document.getElementById('directPort').textContent = socks5Data.direct.port || '';
+        document.getElementById('directUser').textContent = socks5Data.direct.user || '';
+        document.getElementById('directPass').textContent = socks5Data.direct.pass || '';
+    } else {
+        directDiv.style.display = 'none';
+    }
+    
+    // 中转节点显示
+    const transitDiv = document.getElementById('socks5Transit');
+    if (socks5Data.transit) {
+        transitDiv.style.display = 'block';
+        document.getElementById('transitIp').textContent = socks5Data.transit.ip || '';
+        document.getElementById('transitPort').textContent = socks5Data.transit.port || '';
+        document.getElementById('transitUser').textContent = socks5Data.transit.user || '';
+        document.getElementById('transitPass').textContent = socks5Data.transit.pass || '';
+    } else {
+        transitDiv.style.display = 'none';
+    }
+}
+
+function copyProtocolCode() {
+    if (currentProtocol === 'socks5') {
+        // 复制 socks5 格式化信息
+        let copyText = '';
+        
+        if (socks5Data.direct) {
+            copyText += `无加速:\nIP: ${socks5Data.direct.ip}\n端口: ${socks5Data.direct.port}\n用户名: ${socks5Data.direct.user}\n密码: ${socks5Data.direct.pass}\n\n`;
+        }
+        
+        if (socks5Data.transit) {
+            copyText += `有加速:\nIP: ${socks5Data.transit.ip}\n端口: ${socks5Data.transit.port}\n用户名: ${socks5Data.transit.user}\n密码: ${socks5Data.transit.pass}`;
+        }
+        
+        navigator.clipboard.writeText(copyText).then(() => {
+            layer.msg('复制成功！');
+        }).catch(() => {
+            layer.msg('复制失败，请手动复制');
+        });
+    } else {
+        // 复制 vmess 或 shadowsocks 代码
+        const code = window.protocolCodes[currentProtocol];
+        if (code) {
+            navigator.clipboard.writeText(code).then(() => {
+                layer.msg('复制成功！');
+            }).catch(() => {
+                layer.msg('复制失败，请手动复制');
+            });
+        }
+    }
+}
+</script>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>注册</title>
+	<link rel="icon" type="image/png" href="images/favicon.png">
+	<!-- <link href="css/tailwind.min.css" rel="stylesheet"> -->
+	<link href="https://lib.baomitu.com/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+	<script src="common/jquery-3.5.0.min.js"></script>
+	<script src="js/config.js"></script>
+	<script src="js/base.js"></script>
+	<script src="js/owl.js"></script>
+	<link rel="stylesheet" href="common/layer.3.5.1/theme/default/layer.css">
+	<script src="common/layer.3.5.1/layer.js"></script>
+	<style>
+		.dlbox .weixin,
+		.dlbox .weibo {
+			display: inline-block;
+			width: 32px;
+			height: 32px;
+			background-size: cover;
+		}
+
+		.dlbox .weixin {
+			background-image: url(images/weixin.png);
+		}
+
+		.dlbox .weibo {
+			background-image: url(images/weibo.png);
+		}
+
+		.bg-indigo-100 {
+			background-color: #ebf4ff;
+		}
+
+		.border-gray-200 {
+			border-color: #edf2f7;
+		}
+
+		.bg-gray-100 {
+			background-color: #f7fafc;
+		}
+
+		.bg-indigo-500 {
+			background-color: #667eea;
+		}
+	</style>
+</head>
+
+<body class="min-h-screen bg-gray-100 text-gray-900 flex justify-center dlbox">
+	<div class="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1">
+		<div class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
+			<div class="mt-12 flex flex-col items-center">
+				<h1 class="text-2xl xl:text-3xl font-extrabold site-title">注册</h1>
+				<div class="w-full flex-1 mt-8">
+
+					
+
+					<div class="mx-auto max-w-xs">
+						<form autocomplete="on">
+							<input id="email" name="email" maxlength="60"
+								class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+								type="email" placeholder="邮箱" autocomplete="email" />
+							<div class="flex mt-5  emailValid" style="display: none;">
+								<input id="code" maxlength="8"
+									class="flex-grow px-8 py-4 rounded-l-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+									type="text" placeholder="验证码" />
+								<button
+									class="px-4 rounded-r-lg font-medium bg-blue-500 hover:bg-blue-700 text-white flex items-center text-xs"
+									id="sendCode" type="button">发送</button>
+							</div>
+							<input id="password" name="password" maxlength="18" autocomplete="new-password"
+								class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+								type="password" placeholder="密码(18位以内)" />
+							
+							<input id="inviteCode" name="inviteCode" maxlength="18"  style="display: none;"
+								class="inviteStatus w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+								type="text" placeholder="邀请码(选填)" />
+							<button id="register"
+								class="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+								type="submit">
+								<span class="ml-3">注 册</span>
+							</button>
+							
+							<div class="mt-6 text-xs text-gray-600 flex items-center justify-end">
+								<span>已有账号? <a href="login.html"
+										class="text-blue-600 hover:text-blue-800">立即登录</a></span>
+							</div>
+						</form>
+					</div>
+
+
+
+				</div>
+			</div>
+		</div>
+		<div class="flex-1 bg-indigo-100 text-center hidden lg:flex">
+			<div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+				style="background-image: url('images/dlbox.png');"></div>
+		</div>
+	</div>
+</body>
+
+</html>
+<script>
+	$(document).ready(function () {
+		getEmailValid();
+		let inviteCode = getUrlParam('code')
+	if (inviteCode) {
+		$('#inviteCode').val(inviteCode);
+		$('#inviteCode').attr('disabled', 'disabled');
+	}
+});
+</script>

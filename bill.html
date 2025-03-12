@@ -1,0 +1,52 @@
+<style>
+    .table-container {
+        height: 746px;
+        overflow-y: auto;
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    }
+
+    .table-container::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    thead {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #e5e7eb;
+    }
+
+    th, td {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 8px 16px;
+    }
+</style>
+
+<div class="container mx-auto">
+    <div class="table-container overflow-x-auto shadow-md sm:rounded-lg"  style="box-shadow: none;border: 1px solid #e0e0e0;height: auto;">
+        <table class="w-full text-sm text-left text-gray-500" style="text-align: center;">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+                <tr>
+                    <th scope="col" class="px-4 py-3">序号</th>
+                    <th scope="col" class="px-4 py-3">渠道订单号</th>
+                    <th scope="col" class="px-4 py-3">收支账户</th>
+                    <th scope="col" class="px-4 py-3">收支类型</th>
+                    <th scope="col" class="px-4 py-3">金额</th>
+                    <th scope="col" class="px-4 py-3">余额</th>
+                    <th scope="col" class="px-4 py-3">交易类型</th>
+                    <th scope="col" class="px-4 py-3">交易状态</th>
+                    <th scope="col" class="px-4 py-3">收支日期</th>
+                </tr>
+            </thead>
+            <tbody id="bill-data-table">
+                <!-- 数据 -->
+            </tbody>
+        </table>
+    </div>
+</div>
