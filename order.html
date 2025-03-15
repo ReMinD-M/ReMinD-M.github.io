@@ -59,6 +59,30 @@
         margin-bottom: 8px; /* Adds space between stacked links */
     }
 }
+
+/* 排序样式 */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.sortable:after {
+    content: '⇅';
+    position: absolute;
+    margin-left: 5px;
+    opacity: 0.5;
+}
+
+.sortable.asc:after {
+    content: '↑';
+    opacity: 1;
+}
+
+.sortable.desc:after {
+    content: '↓';
+    opacity: 1;
+}
 </style>
 
 <div class="container mx-auto">
@@ -75,8 +99,8 @@
                     <th scope="col" class="px-4 py-3">名称</th>
                     <th scope="col" class="px-4 py-3">线路</th>
                     <th scope="col" class="px-4 py-3">出口IP</th>
-                    <th scope="col" class="px-4 py-3">生效时间</th>
-                    <th scope="col" class="px-4 py-3">过期时间</th>
+                    <th scope="col" class="px-4 py-3 sortable" data-sort="start-time" onclick="handleSort(this, 'beginTime')">生效时间</th>
+                    <th scope="col" class="px-4 py-3 sortable" data-sort="end-time" onclick="handleSort(this, 'expirationTime')">过期时间</th>
                     <th scope="col" class="px-4 py-3">总流量</th>
                     <th scope="col" class="px-4 py-3">剩余流量</th>
                     <!-- <th scope="col" class="px-4 py-3">二维码</th> -->
@@ -96,8 +120,8 @@
                     <th scope="col" class="px-4 py-3">订单号</th>
                     <th scope="col" class="px-4 py-3">名称</th>
                     <th scope="col" class="px-4 py-3">线路</th>
-                    <th scope="col" class="px-4 py-3">生效时间</th>
-                    <th scope="col" class="px-4 py-3">过期时间</th>
+                    <th scope="col" class="px-4 py-3 sortable" data-sort="start-time" onclick="handleSort(this, 'beginTime')">生效时间</th>
+                    <th scope="col" class="px-4 py-3 sortable" data-sort="end-time" onclick="handleSort(this, 'expirationTime')">过期时间</th>
                     <th scope="col" class="px-4 py-3">总流量</th>
                     <th scope="col" class="px-4 py-3">价格</th>
                     <th scope="col" class="px-4 py-3">周期</th>

@@ -1,3 +1,39 @@
+// 处理排序的函数
+window.handleSort = function(element, field) {
+	console.log("排序被点击:", field);
+	
+	// 初始化sortState如果不存在
+	window.sortState = window.sortState || { field: '', order: '' };
+	
+	// 确定排序方向
+	let order = '';
+	if (window.sortState.field === field) {
+		// 切换排序方向
+		order = window.sortState.order === 'asc' ? 'desc' : 'asc';
+	} else {
+		// 默认降序 - 最新的时间在前面
+		order = 'desc';
+	}
+	
+	console.log(`排序: 字段=${field} 顺序=${order}`);
+	
+	// 更新全局排序状态
+	window.sortState.field = field;
+	window.sortState.order = order;
+	
+	// 更新表头排序指示器
+	document.querySelectorAll('.sortable').forEach(el => {
+		el.classList.remove('asc', 'desc');
+	});
+	element.classList.add(order);
+	
+	// 确定当前是哪个表格
+	const isCurrent = element.closest('#current_list') !== null;
+	
+	// 重新获取数据
+	getOrderList(isCurrent, field, order);
+};
+
 $(document).ready(function () {
 	$('#current').click(function () {
 		updateSelectedState(true);
@@ -18,17 +54,49 @@ function updateSelectedState(isCurrent) {
 }
 
 function current_order() {
-	getOrderList(true);
+	getOrderList(true, window.sortState?.field || '', window.sortState?.order || '');
 }
 
 function old_order() {
-	getOrderList(false);
+	getOrderList(false, window.sortState?.field || '', window.sortState?.order || '');
 }
 
 // fetchOrder 函数保持不变
 
-function getOrderList(current) {
+// 计算剩余天数的函数
+function calculateRemainingDays(expirationDateStr) {
+	// 解析到期日期字符串为日期对象
+	const dateParts = expirationDateStr.split('-');
+	if (dateParts.length !== 3) return -1; // 格式无效
+	
+	const year = parseInt(dateParts[0]);
+	const month = parseInt(dateParts[1]) - 1; // 月份从0开始计数
+	const day = parseInt(dateParts[2]);
+	
+	const expirationDate = new Date(year, month, day);
+	const today = new Date();
+	
+	// 重置时间部分以确保比较准确
+	today.setHours(0, 0, 0, 0);
+	expirationDate.setHours(0, 0, 0, 0);
+	
+	// 计算剩余毫秒数并转换为天数
+	const diffTime = expirationDate - today;
+	const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+	
+	return diffDays;
+}
+
+function getOrderList(current, sortField, sortOrder) {
 	var url = domain + (current ? "/owl/findCurrentSubscribe" : "/owl/findOldSubscribe");
+	
+	// 如果有排序参数，添加到URL
+	if (sortField && sortOrder) {
+		console.log("添加排序参数:", sortField, sortOrder);
+		url += "?order=" + sortField + "&type=" + sortOrder;
+	}
+	
+	console.log("请求URL:", url);
 	var index = layer.load(1, {
 		shade: 0
 	});
@@ -40,6 +108,7 @@ function getOrderList(current) {
 		},
 		dataType: 'json',
 		success: function (data) {
+			console.log("数据加载成功");
 			var rows = '';
 			if (data.code === 200) {
 				const result = data.result;
@@ -51,6 +120,10 @@ function getOrderList(current) {
 					$.each(result, function (index, item) {
 						// 构造表格行
 						if (current) {
+							// 计算剩余天数
+							const remainingDays = calculateRemainingDays(item.expirationTime);
+							const daysClass = remainingDays < 7 ? 'text-red-500 font-bold' : '';
+							
 							rows += `<tr class="bg-white border-b">
 							<th scope="row" class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap">
 								<a href="#" class="subscribe-name" data-id="${item.subscribeId}" style="color: blue;">
@@ -60,7 +133,7 @@ function getOrderList(current) {
 							rows += `<th scope="row" class="px-4 py-4 font-medium text-gray-900 whitespace-nowrap">${item.productName}</th>
 							<td class="px-4 py-4">${item.ip ? item.ip : '暂无IP'}</td> 
 					         <td class="px-4 py-4">${item.beginTime}</td>
-					         <td class="px-4 py-4">${item.expirationTime}</td>
+					         <td class="px-4 py-4"><span class="${daysClass}">${item.expirationTime}</span></td>
 					         <td class="px-4 py-4">${item.totalTraffic}GB</td>`;
 							rows += `  <td class="px-4 py-4">${item.remainingTraffic}GB</td> `
 							const flag_str = item.flag === 1 ? '充值' : '续费';
@@ -162,9 +235,11 @@ function getOrderList(current) {
 
 				updateSelectedState(current);
 			}
+			// 在数据加载完成后重新设置排序
+			setTimeout(window.setupSorting, 100);
 		},
 		error: function (xhr, status, error) {
-			console.error("Error: " + error);
+			console.error("数据加载错误:", error);
 		},
 		complete: function () {
 			// 关闭加载指示器
