@@ -60,16 +60,16 @@
 
 					<div class="mx-auto max-w-xs">
 						<form autocomplete="on">
-							<input id="email" name="email" maxlength="60"
+							<input id="phone" name="phone" maxlength="60"
 								class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-								type="email" placeholder="邮箱" autocomplete="email" />
-							<div class="flex mt-5  emailValid" style="display: none;">
+								type="phone" placeholder="手机号" autocomplete="phone" />
+							<div class="flex mt-5 " >
 								<input id="code" maxlength="8"
 									class="flex-grow px-8 py-4 rounded-l-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
 									type="text" placeholder="验证码" />
 								<button
 									class="px-4 rounded-r-lg font-medium bg-blue-500 hover:bg-blue-700 text-white flex items-center text-xs"
-									id="sendCode" type="button">发送</button>
+									id="sendCode" type="button" data-verificationCodeType="1">发送</button>
 							</div>
 							<input id="password" name="password" maxlength="18" autocomplete="new-password"
 								class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
@@ -106,8 +106,7 @@
 </html>
 <script>
 	$(document).ready(function () {
-		getEmailValid();
-		let inviteCode = getUrlParam('code')
+	let inviteCode = getUrlParam('code')
 	if (inviteCode) {
 		$('#inviteCode').val(inviteCode);
 		$('#inviteCode').attr('disabled', 'disabled');

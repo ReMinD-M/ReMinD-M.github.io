@@ -7,7 +7,6 @@ $(function () {
 function bindEvents() {
 	getUser();
 	$('#sendCode').click(handleSendCode);
-	$('#sendCodeButton').click(handleSendCode);
 	$('#userMenuButton').click(function () {
 		toggleDropdown();
 	});

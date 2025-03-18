@@ -96,7 +96,7 @@ function getOrderList(current, sortField, sortOrder) {
 		url += "?order=" + sortField + "&type=" + sortOrder;
 	}
 	
-	console.log("请求URL:", url);
+	// console.log("请求URL:", url);
 	var index = layer.load(1, {
 		shade: 0
 	});

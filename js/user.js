@@ -10,7 +10,7 @@ function getUser() {
 			if (response.code === 200) {
 				const result = response.result;
 				$('#username').text(result.username);
-				$('#email').val(result.email)
+				$('#phone').val(result.phone)
 				$('#user_avatar').show()
 				$('#head_avatar').show();
 				// $('#user_avatar').attr('src', result.profile);
@@ -353,7 +353,6 @@ function closeAvatarModal() {
 
 function showChangePasswordDiv() {
 	toggleDropdown();
-	getEmailValid();
 	// 显示模态框
 	const modal = document.getElementById('changePasswordDiv');
 	modal.classList.remove('hidden');
@@ -367,11 +366,7 @@ function closeChangePasswordDiv() {
 }
 
 
-// 示例：简单的邮箱验证函数
-function validateEmail(email) {
-	var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	return re.test(email);
-}
+
 
 
 function updatePassword() {
@@ -383,7 +378,7 @@ function updatePassword() {
 	}
 	// 构建请求数据
 	var data = {
-		emailCode: code,
+		phoneCode: code,
 		password: password
 	};
 	var index = layer.load(1, {

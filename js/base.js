@@ -146,30 +146,7 @@ function getSiteTitle() {
 		}
 	});
 }
-function getEmailValid() {
-	$.ajax({
-		url: domain + '/owl/getEmailValid?_=' + new Date().getTime(),
-		type: 'GET',
-		cache: false,
-		xhrFields: {
-			withCredentials: true
-		},
-		dataType: 'json',
-		success: function (response) {
-			if (response.code === 200) {
-				const emailValid = response.result;
-				if (emailValid) {
-					$('.emailValid').show();
-				}
-			} else {
-				layer.msg(response.message);
-			}
-		},
-		error: function (xhr, status, error) {
-			console.log('查询邮箱验证遇到错误');
-		}
-	});
-}
+
 function getInviteStatus() {
 	$.ajax({
 		url: domain + '/owl/getInviteStatus?_=' + new Date().getTime(),

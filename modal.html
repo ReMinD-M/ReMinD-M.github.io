@@ -520,17 +520,17 @@
             </div>
 
             <div class="mb-4">
-                <input type="email" id="email" disabled
+                <input type="text" id="phone" disabled
                     class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="邮箱">
+                    placeholder="手机号">
             </div>
 
-            <div class="mb-4 flex  emailValid" style="display: none;">
+            <div class="mb-4 flex  phoneValid">
                 <input type="text" id="code" maxlength="8"
                     class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     style="flex-basis: 70%;" placeholder="验证码">
                 <button class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:text-sm"
-                    id="sendCodeButton" style="line-height:normal;">发送</button>
+                    id="sendCode" style="line-height:normal;" data-verificationCodeType="3">发送</button>
             </div>
             <div class="mb-4 flex">
                 <input type="password" id="new_password" autocomplete="new-password" maxlength="12"

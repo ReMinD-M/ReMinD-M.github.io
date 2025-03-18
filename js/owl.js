@@ -8,16 +8,16 @@ function handleRegister(event) {
 	event.preventDefault();
 
 	// var username = $('#username').val().trim();
-	var email = $('#email').val().trim();
+	var phone = $('#phone').val().trim();
 	var code = $('#code').val().trim();
 	var password = $('#password').val().trim();
 	var inviteCode = $('#inviteCode').val().trim();
-	if (!email || !password) {
+	if (!phone || !password) {
 		layer.msg('所有字段都是必填项，请确保填写完整。');
 		return;
 	}
-	var username = email;
-	register(username, email, code, password, inviteCode);
+	var username = phone;
+	register(username, phone, code, password, inviteCode);
 }
 
 
@@ -25,26 +25,26 @@ function handleRegister(event) {
 function handleLogin(event) {
 	event.preventDefault();
 
-	var email = $('#login_email').val().trim();
+	var phone = $('#login_phone').val().trim();
 	var password = $('#login_password').val().trim();
 
-	if (!email || !password) {
+	if (!phone || !password) {
 		layer.msg('所有字段都是必填项，请确保填写完整。');
 		return;
 	}
-	if (!validateEmail(email)) {
-		layer.msg('邮箱格式不正确');
+	if (!validatePhone(phone)) {
+		layer.msg('手机号格式不正确');
 		return;
-	}	
-	setLoginInfo(email, password);
-	login(email, password);
+	}
+	setLoginInfo(phone, password);
+	login(phone, password);
 }
-function setLoginInfo(email, password) {
+function setLoginInfo(phone, password) {
 	var remember_password = $('#remember_password').is(':checked');
 	if (remember_password) {
 		var loginInfo = {
 			remember_password: "true",
-			email: email,
+			phone: phone,
 			password: btoa(password)
 		};
 		setCookie("remember", JSON.stringify(loginInfo), 365);
@@ -52,12 +52,12 @@ function setLoginInfo(email, password) {
 		deleteCookie("remember");
 	}
 }
-//写一个函数，获取cookie中的loginInfo,如果loginInfo存在，则将email和password填充到表单中
+//写一个函数，获取cookie中的loginInfo,如果loginInfo存在，则将phone和password填充到表单中
 function getLoginInfo() {
 	var loginInfo = getCookieValue("remember");
 	if (loginInfo) {
 		loginInfo = JSON.parse(loginInfo);
-		$('#login_email').val(loginInfo.email);
+		$('#login_phone').val(loginInfo.phone);
 		$('#login_password').val(atob(loginInfo.password));
 		$('#remember_password').prop('checked', true);
 	}
@@ -65,19 +65,14 @@ function getLoginInfo() {
 
 
 
-function validateEmail(email) {
-	var re =
-		/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.[^<>()[\]\.,;:\s@"]{2,}))$/i;
-	return re.test(email);
-}
 
 
-function register(username, email, code, password, inviteCode) {
+function register(username, phone, code, password, inviteCode) {
 	// 构建请求数据
 	var data = {
 		username: username,
-		email: email,
-		emailCode: code,
+		phone: phone,
+		phoneCode: code,
 		password: password,
 		inviteCode: inviteCode
 	};
@@ -120,14 +115,14 @@ function handleSendCode(event) {
 		return;
 	}
 
-	var email = $('#email').val().trim();
-	if (!email) {
-		layer.msg('请输入邮箱');
+	var phone = $('#phone').val().trim();
+	if (!phone) {
+		layer.msg('请输入手机号');
 		return;
 	}
 
-	if (!validateEmail(email)) {
-		layer.msg('邮箱格式不正确');
+	if (!validatePhone(phone)) {
+		layer.msg('手机号格式不正确');
 		return;
 	}
 
@@ -145,18 +140,20 @@ function handleSendCode(event) {
 			btn.textContent = `${seconds--}s`;
 		}
 	}, 1000);
-
-	sendCode(email, btn, originalText, intervalId);
+	//获取data-verificationCodeType的值
+	const verificationCodeType = this.getAttribute('data-verificationCodeType');
+	sendCode(phone, verificationCodeType, btn, originalText, intervalId);
 }
 
-function sendCode(email, btn, originalText, intervalId) {
+function sendCode(phone, verificationCodeType, btn, originalText, intervalId) {
 	var data = {
-		"email": email
+		"phone": phone,
+		"verificationCodeType": verificationCodeType
 	};
 	console.log(data);
 	// 发送注册请求（示例代码，根据实际API调整）
 	$.ajax({
-		url: domain + '/auth/sendEmailCode',
+		url: domain + '/auth/sendPhoneCode',
 		type: 'POST',
 		contentType: 'application/json',
 		data: JSON.stringify(data),
@@ -183,16 +180,16 @@ function sendCode(email, btn, originalText, intervalId) {
 
 
 
-function validateEmail(email) {
-	var emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-	return emailReg.test(email);
+function validatePhone(phone) {
+	var phoneReg = /^1[3-9]\d{9}$/;
+	return phoneReg.test(phone);
 
 }
 
-function login(email, password) {
+function login(phone, password) {
 	// 构建请求数据
 	var data = {
-		email: email,
+		phone: phone,
 		password: password,
 		loginType: "WEB"
 	};
