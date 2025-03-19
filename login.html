@@ -48,11 +48,45 @@
 		.bg-indigo-500 {
 			background-color: #667eea;
 		}
+
+		/* 选项卡样式 */
+		.tab-active {
+			color: #667eea;
+			border-bottom: 2px solid #667eea;
+		}
+
+		.tab-content {
+			display: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+
+		/* 验证码按钮样式 */
+		.code-button {
+			background-color: #667eea;
+			color: white;
+			padding: 0 10px;
+			border-radius: 0 6px 6px 0;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		.code-button:hover {
+			background-color: #5a67d8;
+		}
+
+		.code-input-container {
+			display: flex;
+		}
+
+		.code-input {
+			border-radius: 6px 0 0 6px !important;
+		}
 	</style>
-	<script>
-
-
-	</script>
 </head>
 
 <body class="min-h-screen bg-gray-100 text-gray-900 flex justify-center dlbox">
@@ -62,18 +96,43 @@
 				<h1 class="text-2xl xl:text-3xl font-extrabold site-title">登录</h1>
 				<div class="w-full flex-1 mt-8">
 
+					<!-- 登录选项卡 -->
+					<div class="flex justify-center mb-6">
+						<div class="flex space-x-8">
+							<div id="password-tab" class="px-4 py-2 cursor-pointer tab-active">密码登录</div>
+							<div id="code-tab" class="px-4 py-2 cursor-pointer">验证码登录</div>
+						</div>
+					</div>
 
 					<div class="mx-auto max-w-xs">
-						<input id="login_phone" maxlength="11"
+						<!-- 手机号输入框，两种登录方式共用 -->
+						<input id="phone" maxlength="11"
 							class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
 							type="text" placeholder="手机号">
-						<input id="login_password" maxlength="18"
-							class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-							type="password" placeholder="密码">
-						<div class="mt-4 flex items-center">
-							<input id="remember_password" type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600">
-							<label for="remember_password" class="ml-2 block text-sm text-gray-900">记住密码</label>
+						
+						<!-- 密码登录表单 -->
+						<div id="password-content" class="tab-content active">
+							<input id="login_password" maxlength="18"
+								class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+								type="password" placeholder="密码">
+							<div class="mt-4 flex items-center">
+								<input id="remember_password" type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600">
+								<label for="remember_password" class="ml-2 block text-sm text-gray-900">记住密码</label>
+							</div>
 						</div>
+						
+						<!-- 验证码登录表单 -->
+						<div id="code-content" class="tab-content">
+							<div class="flex mt-5 " >
+								<input id="code" maxlength="8"
+									class="flex-grow px-8 py-4 rounded-l-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+									type="text" placeholder="验证码" />
+								<button
+									class="px-4 rounded-r-lg font-medium bg-blue-500 hover:bg-blue-700 text-white flex items-center text-xs"
+									id="sendCode" type="button" data-verificationCodeType="2">发送</button>
+							</div>
+						</div>
+						
 						<button id="login_button"
 							class="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
 							<span class="ml-3">登 录</span>
@@ -83,8 +142,6 @@
 							<span>没有账号? <a href="register.html"
 									class="text-blue-600 hover:text-blue-800">立即注册</a></span>
 						</div>
-
-
 					</div>
 				</div>
 			</div>
@@ -100,5 +157,33 @@
 <script>
 	$(document).ready(function() {
 		getLoginInfo();
+		$('#sendCode').click(handleSendCode);
+		// 选项卡切换逻辑
+		$("#password-tab").click(function() {
+			// 激活密码选项卡
+			$("#password-tab").addClass("tab-active");
+			$("#code-tab").removeClass("tab-active");
+			
+			// 显示密码登录内容
+			$("#password-content").addClass("active");
+			$("#code-content").removeClass("active");
+			
+			// 清空验证码输入框
+			$("#login_code").val("");
+		});
+
+		$("#code-tab").click(function() {
+			// 激活验证码选项卡
+			$("#code-tab").addClass("tab-active");
+			$("#password-tab").removeClass("tab-active");
+			
+			// 显示验证码登录内容
+			$("#code-content").addClass("active");
+			$("#password-content").removeClass("active");
+			
+			// 清空密码输入框
+			$("#login_password").val("");
+		});
+	
 	});
 </script>

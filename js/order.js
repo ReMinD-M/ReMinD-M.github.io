@@ -108,7 +108,6 @@ function getOrderList(current, sortField, sortOrder) {
 		},
 		dataType: 'json',
 		success: function (data) {
-			console.log("数据加载成功");
 			var rows = '';
 			if (data.code === 200) {
 				const result = data.result;
