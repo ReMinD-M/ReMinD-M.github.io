@@ -537,7 +537,27 @@ function confirmBuy() {
 					}, 1000);
 				});
 			} else {
-				layer.msg(response.message);
+				if(response.message=='余额不足')
+				{
+					var confirmIndex=layer.confirm('当前余额不足，是否需要充值？', {
+						btn: ['充值', '取消'] // 定义按钮
+					  }, function () {
+						// 点击充值按钮的回调函数
+						console.log('执行充值操作');
+						toggleRechargeModal();
+						// 在这里编写执行充值的代码，比如跳转到充值页面或调用充值接口
+						// 假设跳转到充值页面
+						// window.location.href = 'recharge.html';
+						layer.close(confirmIndex); // 关闭当前弹出框
+					  }, function () {
+						// 点击取消按钮的回调函数
+						console.log('用户取消充值');
+					  });
+				}
+				else{
+					layer.msg(response.message);
+				}
+				
 			}
 		},
 		error: function (xhr, status, error) {
