@@ -377,7 +377,34 @@
                 class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">修改</button>
         </div>
     </div>
-
+    <div id="updateIdCode" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="closeUpdateNameModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">修改客户端识别码</h3>
+  
+            <input type="text" maxlength="4" id="newIdCodeInput"
+                class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="输入识别码">
+            <div class="flex mb-4">
+                <input type="text" id="verificationCodeInput"
+                    class="w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="输入验证码">
+                <button id="sendVerificationCodeButton"
+                    class="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >发送验证码</button>
+            </div>
+            <button id="updateIdCodeButton"
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">修改</button>
+        </div>
+    </div>
     {/* 购买 */}
     <!-- <div id="buyDiv" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
         style="z-index: 10000;">

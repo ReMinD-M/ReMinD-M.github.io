@@ -133,6 +133,7 @@ function getOrderList(current, sortField, sortOrder) {
 							<td class="px-4 py-4">${item.ip ? item.ip : '暂无IP'}</td> 
 					         <td class="px-4 py-4">${item.beginTime}</td>
 					         <td class="px-4 py-4"><span class="${daysClass}">${item.expirationTime}</span></td>
+							 <td class="px-4 py-4"><a href="#" class="id-code" data-id="${item.subscribeId}" style="color: blue;"> ${item.idCode}</a></td>
 					         <td class="px-4 py-4">${item.totalTraffic}GB</td>`;
 							rows += `  <td class="px-4 py-4">${item.remainingTraffic}GB</td> `
 							const flag_str = item.flag === 1 ? '充值' : '续费';
@@ -186,6 +187,11 @@ function getOrderList(current, sortField, sortOrder) {
 					event.preventDefault();
 					var subscribeId = $(this).data('id');
 					showUpdateNameModal(subscribeId);
+				});
+				$('.id-code').on('click', function (event) {
+					event.preventDefault();
+					var subscribeId = $(this).data('id');
+					showIdCodeModal(subscribeId);
 				});
 				// $('.view-link').on('click', function (event) {
 				// 	event.preventDefault();
@@ -542,6 +548,16 @@ function confirmBuy() {
 		}
 	});
 }
+
+function showIdCodeModal(subscribeId) {
+	console.log("subscribeId:" + subscribeId)
+	$('#subscribeId').val("");
+	// 显示模态框
+	const modal = document.getElementById('updateIdCode');
+	modal.classList.remove('hidden');
+	modal.classList.add('flex');
+	$('#subscribeId').val(subscribeId);
+}
 function showUpdateNameModal(subscribeId) {
 	console.log("subscribeId:" + subscribeId)
 	$('#subscribeId').val("");
@@ -579,6 +595,68 @@ function updateSubscribeName() {
 	// AJAX请求服务器进行兑换码验证
 	$.ajax({
 		url: domain + '/owl/updateSubscribeName', // 替换成你的服务端处理URL
+		type: 'POST',
+		xhrFields: {
+			withCredentials: true
+		},
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		success: function (response) {
+			// 根据服务器返回的结果处理，例如弹出成功或失败的消息
+			if (response.code === 200) {
+				layer.msg('修改成功');
+				closeCodeModal();
+				window.location.reload();
+			} else {
+				layer.msg(response.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			layer.msg('修改过程中出现错误');
+		},
+		complete: function () {
+			// 关闭加载指示器
+			layer.close(index);
+			btn.removeClass('disabled');
+		}
+	});
+
+}
+
+function updateIdCode() {
+	var btn = $('#updateIdCodeButton');
+	// 检查按钮是否已禁用
+	if (btn.hasClass('disabled')) {
+		return;
+	}
+	var subscribeId = $('#subscribeId').val();
+	if (!subscribeId) {
+		layer.msg('请选择订阅线路');
+		return;
+	}
+	var newIdCode = $('#newIdCodeInput').val();
+	if (!newIdCode) {
+		layer.msg('请输入识别码');
+		return;
+	}
+	var phoneCode = $('#verificationCodeInput').val();
+	if (!phoneCode) {
+		layer.msg('请输入手机验证码');
+		return;
+	}
+	var data = {
+		"id": subscribeId,
+		"idCode": newIdCode,
+		"phoneCode": phoneCode
+	};
+	// 禁用按钮
+	btn.addClass('disabled');
+	var index = layer.load(1, {
+		shade: [0.5, '#fff']
+	});
+	// AJAX请求服务器进行兑换码验证
+	$.ajax({
+		url: domain + '/user/modifySubscribeIdCode', // 替换成你的服务端处理URL
 		type: 'POST',
 		xhrFields: {
 			withCredentials: true
@@ -1081,4 +1159,43 @@ function updateClientPassword() {
 			}
 		});
 	});
+}
+
+function sendVerificationCode() {
+	var index = layer.load(1, {
+		shade: 0
+	});
+	$.ajax({
+		url: domain + '/user/sendPhoneCode',
+		type: 'POST',
+		xhrFields: {
+			withCredentials: true
+		},
+		contentType: 'application/json',
+		data: JSON.stringify({
+			verificationCodeType: 4,
+		}),
+		success: function(response) {
+			const button = document.getElementById('sendVerificationCodeButton');
+			button.disabled = true;
+			let seconds = 60;
+			const intervalId = setInterval(() => {
+				button.textContent = `${seconds} 秒后重试`;
+				seconds--;
+				if (seconds < 0) {
+					clearInterval(intervalId);
+					button.disabled = false;
+					button.textContent = '发送验证码';
+				}
+			}, 1000);
+		},
+		error: function() {
+			layer.msg('短信发送失败');
+		},
+		complete: function() {
+			layer.close(index);
+		}
+	});
+
+
 }

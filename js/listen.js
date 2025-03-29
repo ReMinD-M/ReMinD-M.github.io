@@ -39,6 +39,14 @@ function bindEvents() {
 		updateSubscribeName();
 	});
 
+	$('#updateIdCodeButton').click(function () {
+		updateIdCode();
+	});
+
+	$('#sendVerificationCodeButton').click(function () {
+		sendVerificationCode();
+	});
+
 	$('#updatePasswordButton').click(function () {
 		updatePassword();
 	});
