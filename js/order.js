@@ -704,7 +704,12 @@ function updateIdCode() {
 	});
 
 }
-
+function closeUpdateIdCodeModal() {
+ 
+	const modal = document.getElementById('updateIdCode');
+	modal.classList.add('hidden');
+	modal.classList.remove('flex');
+}
 
 function closeUpdateNameModal() {
 	const modal = document.getElementById('updateNameDiv');

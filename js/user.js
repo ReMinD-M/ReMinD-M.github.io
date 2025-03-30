@@ -284,9 +284,174 @@ function updateProfile() {
 }
 
 
+//实名认证
+function showSelectIdAuthModal() {
+	toggleDropdown();
+	// $('#new_username').val($('#username').text())
+	// $('#new_user_avatar').attr('src', $('#user_avatar').attr('src'));
+	// 显示模态框
+	const modal = document.getElementById('selectIdAuthModal');
+	modal.classList.remove('hidden');
+	modal.classList.add('flex');
+
+}
+function closeSelectIdAuthModal() {
+	const modal = document.getElementById('selectIdAuthModal');
+	modal.classList.add('hidden');
+	modal.classList.remove('flex');
+}
 
 
+function showAuthPersonalModal() {
+ 
+	// $('#new_username').val($('#username').text())
+	// $('#new_user_avatar').attr('src', $('#user_avatar').attr('src'));
+	// 显示模态框
+	const modal = document.getElementById('editAuthPersonal');
+	modal.classList.remove('hidden');
+	modal.classList.add('flex');
 
+}
+function closeAuthPersonalModal() {
+	const modal = document.getElementById('editAuthPersonal');
+	modal.classList.add('hidden');
+	modal.classList.remove('flex');
+}
+
+//提交个人实名认证
+function updatePersonalAuth() {
+	var data={
+		"images":{
+			"front":"",
+			"back":""
+		}
+	};
+	$("#personalForm input").each(function(){
+		id=$(this).attr('id');
+		data[id]=$(this).val();
+	}) ;
+ 
+	if (!data.name) {
+		layer.msg('请填写姓名。');
+		return;
+	}
+	if (!data.idCard) {
+		layer.msg('请填写身份证。');
+		return;
+	}
+ 
+	 
+	var index = layer.load(1, {
+		shade: [0.5, '#fff']
+	});
+	// 发送注册请求（示例代码，根据实际API调整）
+	$.ajax({
+		url: domain + '/user/realNameAuthentication',
+		type: 'POST',
+		xhrFields: {
+			withCredentials: true
+		},
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		success: function (response) {
+			layer.close(index);
+			if (response.code === 200) {
+				layer.msg(response.message);
+				closeEditModal();
+				getUser();
+				layer.close(index); // 关闭当前弹出层
+			} else {
+				layer.msg("修改失败: " + response.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			layer.msg('修改遇到错误：' + error);
+			layer.close(index); // 关闭当前弹出层
+		}
+	});
+
+}
+
+function showAuthEnterpriseModal() {
+ 
+	// $('#new_username').val($('#username').text())
+	// $('#new_user_avatar').attr('src', $('#user_avatar').attr('src'));
+	// 显示模态框
+	const modal = document.getElementById('editAuthEnterprise');
+	modal.classList.remove('hidden');
+	modal.classList.add('flex');
+
+}
+function closeAuthEnterpriseModal() {
+	const modal = document.getElementById('editAuthEnterprise');
+	modal.classList.add('hidden');
+	modal.classList.remove('flex');
+}
+
+function updateEnterpriseAuth() {
+	console.log('updateEnterpriseAuth');
+	var data={
+		"images":{
+			"legalImages": [],
+			"enterpriseImages": [],
+			"Collection1Img": "",
+			"Collection2Img": "",
+			"Collection3Img": ""
+		}
+	};
+	$("#enterpriseForm input").each(function(){
+		id=$(this).attr('id');
+		data[id]=$(this).val();
+	}) ;
+ 
+	if (!data.enterpriseName) {
+		layer.msg('请填写企业名称。');
+		return;
+	}
+	if (!data.enterpriseNo) {
+		layer.msg('请填写企业代码。');
+		return;
+	}
+	if (!data.legalName) {
+		layer.msg('请填写企业法人姓名。');
+		return;
+	}
+	 
+	if (!data.legalName) {
+		layer.msg('请填写企业法人身份证。');
+		return;
+	}
+
+	var index = layer.load(1, {
+		shade: [0.5, '#fff']
+	});
+	// 发送注册请求（示例代码，根据实际API调整）
+	$.ajax({
+		url: domain + '/user/enterpriseAuthentication',
+		type: 'POST',
+		xhrFields: {
+			withCredentials: true
+		},
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		success: function (response) {
+			layer.close(index);
+			if (response.code === 200) {
+				layer.msg(response.message);
+				closeEditModal();
+				getUser();
+				layer.close(index); // 关闭当前弹出层
+			} else {
+				layer.msg("修改失败: " + response.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			layer.msg('修改遇到错误：' + error);
+			layer.close(index); // 关闭当前弹出层
+		}
+	});
+
+}
 
 function showEditProfileModal() {
 	toggleDropdown();

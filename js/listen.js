@@ -86,6 +86,12 @@ function bindEvents() {
 	$('#rechargeButton').click(function () {
 		toggleRechargeModal();
 	});
+	$('#selectAuthIdButton').click(function () {
+		showSelectIdAuthModal();
+	});
+ 
+	
+
 	$('#confirmRechargeButton').click(function () {
 		recharge();
 	});

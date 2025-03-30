@@ -265,6 +265,102 @@
         </div>
     </div>
 
+
+    <div id="selectIdAuthModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+        style="z-index: 10000;">
+
+        <div class="bg-white p-8 md:p-12 rounded-lg shadow-lg relative max-w-2xl">
+            <button onclick="closeSelectIdAuthModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">实名认证</h3>
+            <div class="flex justify-between space-x-4">
+                <button onclick="showAuthPersonalModal()"
+                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">个人实名认证</button>
+                <button onclick="showAuthEnterpriseModal()"
+                    class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">企业实名认证</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editAuthPersonal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+    style="z-index: 20000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="closeAuthPersonalModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">个人实名认证</h3>
+ 
+            <div class="tab-content">
+                <div id="personal" class="tab-pane active">
+                    <form id="personalForm">
+                        <table>
+                            <tr>
+                                <td>姓名:</td>
+                                <td><input type="text" id="name" class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" name="name"></td>
+                            </tr>
+                            <tr>
+                                <td>身份证号:</td>
+                                <td><input type="text" id="idCard" class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" name="idNumber"></td>
+                            </tr>
+                     
+                        </table>
+                    </form>
+                </div>
+ 
+            </div>
+            <button onclick="updatePersonalAuth()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >提交</button>
+        </div>
+    </div>
+    <div id="editAuthEnterprise" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
+    style="z-index: 20000;">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <button onclick="closeAuthEnterpriseModal()"
+                class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h3 class="mb-4 text-lg font-semibold text-gray-900">企业实名认证</h3>
+ 
+            <div id="enterprise" class="tab-pane"  >
+                <form id="enterpriseForm">
+                    <table>
+                        <tr>
+                            <td>企业名称:</td>
+                            <td><input id="enterpriseName" type="text" class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" name="enterpriseName"></td>
+                        </tr>
+                        <tr>
+                            <td>企业代码:</td>
+                            <td><input id="enterpriseNo" type="text" class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" name="creditCode"></td>
+                        </tr>
+                        <tr>
+                            <td>法人姓名:</td>
+                            <td><input id="legalName" type="text" class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" name="creditCode"></td>
+                        </tr>
+                        <tr>
+                            <td>法人身份证:</td>
+                            <td><input id="legalIdCard" type="text" class="mb-4 w-full p-2 text-gray-700 border rounded shadow border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" name="creditCode"></td>
+                        </tr>
+                      
+                    </table>
+                </form>
+            </div>
+            <button onclick="updateEnterpriseAuth()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" >提交</button>
+        </div>
+    </div>
     
     {/* 申请推广 */}
     <div id="applyPromotionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
@@ -380,7 +476,7 @@
     <div id="updateIdCode" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center"
         style="z-index: 10000;">
         <div class="bg-white p-6 rounded-lg shadow-lg relative">
-            <button onclick="closeUpdateNameModal()"
+            <button onclick="closeUpdateIdCodeModal()"
                 class="absolute top-0 right-0 mt-4 mr-4 text-gray-900 hover:text-gray-600">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">

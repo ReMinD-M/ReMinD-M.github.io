@@ -50,7 +50,14 @@ $(document).ready(function () {
 		});
 	}
 
+	$('.tab-buttons button').click(function () {
+		$('.tab-buttons button').removeClass('active');
+		$(this).addClass('active');
 
+		var target = $(this).data('target');
+		$('.tab-pane').removeClass('active');
+		$('#' + target).addClass('active');
+	});
 });
 
 function redirectToLoginIfNecessary(url) {
