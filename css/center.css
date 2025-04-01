@@ -195,7 +195,7 @@ body {
 	box-sizing: border-box;
 	margin: auto;
 	/* width: 1080px; */
-	padding-left: 20px;
+	/* padding-left: 20px; */
 }
 
 @media screen and (max-width:1200px) {
@@ -686,11 +686,14 @@ footer .col ul li:hover {
 }
 
 .user-head[data-v-0f04b1f4] {
-	display: flex
+	display: flex;
+	
+    width: 30%;
+    justify-content: flex-end;
 }
 
 .user-head .menu[data-v-0f04b1f4] {
-	padding: 0 1rem
+	padding: 0 0 0 1rem
 }
 
 .user-head .menu .Username[data-v-0f04b1f4] {

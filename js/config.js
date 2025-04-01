@@ -1,1 +1,1 @@
-var domain="http://line3.oneline.cn/api";
+var domain="https://api.tkidc.com/api";
