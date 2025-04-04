@@ -1,13 +1,11 @@
 var sessionToken = getCookieValue('session_token');
+ 
+
 if (!sessionToken) {
 	window.location.href = "/login.html";
 } else {
 	deviceRoute();
 }
-
-
-
-
 
 function getCookieValue(name) {
 	let nameString = name + "=";

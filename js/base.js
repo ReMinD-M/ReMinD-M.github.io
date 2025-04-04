@@ -61,13 +61,13 @@ $(document).ready(function () {
 });
 
 function redirectToLoginIfNecessary(url) {
-	if (!url.includes('login') && !url.includes('register')) {
+	if (!url.includes('login') && !url.includes('register') || url.includes('forgetpwd')) {
 		window.location.href = "/login.html";
 	}
 }
 
 function redirectToCenterIfNecessary(url) {
-	if (url.includes('login') || url.includes('register')) {
+	if (url.includes('login') || url.includes('register') || url.includes('forgetpwd')) {
 		deviceRoute();
 	}
 }

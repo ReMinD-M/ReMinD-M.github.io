@@ -1,9 +1,33 @@
 $(document).ready(function() {
-	initialize();
+	defaultStyle();
+	console.log('center_default',getCookieValue("center_default"));
+	if(getCookieValue("center_default")=="price")
+	{
+		price();
+	}
+	else if(getCookieValue("center_default")=="initialize")
+	{
+		initialize();
+	}
+	else if(getCookieValue("center_default")=="account")
+	{
+		account();
+	}
+	else if(getCookieValue("center_default")=="bill")
+	{
+		bill();
+	}
+	else
+	{
+		setCookie("center_default", "initialize", 7);
+		initialize();
+	}
+
 });
 
 function initialize() {
-	defaultStyle();
+	// defaultStyle();
+	setCookie("center_default", "initialize", 7);
 	fetch('/order.html')
 		.then(response => response.text())
 		.then(data => {
@@ -22,6 +46,7 @@ function initialize() {
 }
 
 function price() {
+	setCookie("center_default", "price", 7);
 	fetch('/price.html')
 		.then(response => response.text())
 		.then(data => {
@@ -36,7 +61,8 @@ function price() {
 }
 
 function account() {
-	defaultStyle();
+	// defaultStyle();
+	setCookie("center_default", "account", 7);
 	fetch('/account.html')
 		.then(response => response.text())
 		.then(data => {
@@ -49,6 +75,7 @@ function account() {
 		.catch(error => console.error('Error loading the content:', error));
 }
 function bill() {
+	setCookie("center_default", "bill", 7);
 	fetch('/bill.html')
 		.then(response => response.text())
 		.then(data => {

@@ -11,6 +11,7 @@ function getUser() {
 				const result = response.result;
 				$('#username').text(result.username);
 				$('#phone').val(result.phone)
+				
 				$('#user_avatar').show()
 				$('#head_avatar').show();
 				// $('#user_avatar').attr('src', result.profile);
@@ -23,6 +24,21 @@ function getUser() {
 				if (inviteStatus == 0) {
 					$('.inviteStatus').show();
 					$('#applyInviteButtonText').text('我的推广');
+				}
+				const accountIdentityType=result.accountIdentityType;
+				console.log('accountIdentityType',accountIdentityType);
+				if(accountIdentityType && accountIdentityType>0)
+				{					
+					$("#noAuthIdDiv").hide();
+					$("#hasAuthIdDiv").show();
+				}else{
+					$("#noAuthIdDiv").show();
+					$("#hasAuthIdDiv").hide();
+					if(getCookieValue("center_default")=="price")
+					{
+						$("#selectAuthIdButton").click();
+					}
+					
 				}
 			} else {
 				layer.msg("查询个人信息失败:" + response.message);
@@ -357,8 +373,8 @@ function updatePersonalAuth() {
 			layer.close(index);
 			if (response.code === 200) {
 				layer.msg(response.message);
-				closeEditModal();
-				getUser();
+				closeAuthPersonalModal();
+				location.reload();
 				layer.close(index); // 关闭当前弹出层
 			} else {
 				layer.msg("修改失败: " + response.message);
@@ -438,8 +454,8 @@ function updateEnterpriseAuth() {
 			layer.close(index);
 			if (response.code === 200) {
 				layer.msg(response.message);
-				closeEditModal();
-				getUser();
+				closeAuthEnterpriseModal();
+				location.reload();
 				layer.close(index); // 关闭当前弹出层
 			} else {
 				layer.msg("修改失败: " + response.message);

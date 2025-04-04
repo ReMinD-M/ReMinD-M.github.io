@@ -2,6 +2,8 @@ $(document).ready(function () {
 	$('#sendCode').click(handleSendCode);
 	$('#register').click(handleRegister);
 	$('#login_button').click(handleLogin);
+	$('#resetpwd_button').click(handleForgetPwd);
+	 
 });
 
 function handleRegister(event) {
@@ -20,7 +22,67 @@ function handleRegister(event) {
 	register(username, phone, code, password, inviteCode);
 }
 
+function handleForgetPwd(event) {
+	event.preventDefault();
 
+	// var username = $('#username').val().trim();
+	var phone = $('#phone').val().trim();
+	var code = $('#code').val().trim();
+	var password = $('#password').val().trim();
+	var password2 = $('#password2').val().trim();
+	if (!phone || !password || !password2 || !code) {
+		layer.msg('所有字段都是必填项，请确保填写完整。');
+		return;
+	}
+	if(password2!=password)
+	{
+		layer.msg('两次输入密码不一致。');
+		return;
+	}
+ 
+	forgetpwd( phone, code, password);
+}
+function forgetpwd(phone, code, password) {
+	// 构建请求数据
+	var data = { 
+		phone: phone,
+		code: code,
+		pwd: password,
+	};
+	var index = layer.load(1, {
+		shade: [0.5, '#fff']
+	});
+	// 发送注册请求（示例代码，根据实际API调整）
+	$.ajax({
+		url: domain + '/auth/forgetpwd',
+		type: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		success: function (response) {
+			layer.close(index);
+			if (response.code === 200) {
+				// 显示Layer提示框
+				layer.alert('密码修改成功', {
+					title: '提示',
+					closeBtn: 0,
+					anim: 1 // 动画类型
+				}, function (index) {
+					// 点击确定按钮后的回调函数
+					window.location.href = '/login.html'
+					layer.close(index); // 关闭当前弹出层
+				});
+			} else {
+				layer.alert(response.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			layer.msg('修改遇到错误：' + error);
+		}
+	});
+}
+
+
+ 
 
 function handleLogin(event) {
 	event.preventDefault();
@@ -99,7 +161,12 @@ function register(username, phone, code, password, inviteCode) {
 					anim: 1 // 动画类型
 				}, function (index) {
 					// 点击确定按钮后的回调函数
-					window.location.href = '/login.html'
+
+					setCookie("session_token", response.result.token, 7)
+					setCookie("center_default", "price", 7);
+					deviceRoute();
+
+				 
 					layer.close(index); // 关闭当前弹出层
 				});
 			} else {
