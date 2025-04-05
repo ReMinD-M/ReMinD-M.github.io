@@ -191,10 +191,12 @@ function getUseTutorialLink() {
 		success: function (response) {
 			if (response.code === 200) {
 				const useTutorialLink = response.result;
+	
 				if (useTutorialLink) {
 					// 设置所有.useTutorialLink元素点击事件
 					$('.useTutorialLink').on('click', function (e) {
 						e.preventDefault(); // 阻止默认行为
+						console.log('useTutorialLink',useTutorialLink);
 						window.open(useTutorialLink, '_blank'); // 在新标签页中打开链接
 					});
 				}
@@ -219,6 +221,7 @@ function getIdShareUrl() {
 		success: function (response) {
 			if (response.code === 200) {
 				const idShareUrl = response.result;
+ 
 				if (idShareUrl) {
 					$('.idShareUrl').on('click', function (e) {
 						e.preventDefault(); // 阻止默认行为
