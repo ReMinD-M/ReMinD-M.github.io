@@ -1,1 +1,1 @@
-var domain="https://api.tkidc.com/api";
+var domain="https://api.otidc.com/api";
