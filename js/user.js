@@ -37,7 +37,10 @@ function getUser() {
 					if(getCookieValue("center_default")=="price")
 					{
 						$("#selectAuthIdButton").click();
+					}else{
+
 					}
+				 
 					
 				}
 			} else {

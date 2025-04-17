@@ -290,6 +290,7 @@ function login(phone, password,code) {
 		success: function (response) {
 			if (response.code === 200) {
 				setCookie("session_token", response.result.token, 7)
+				setCookie("center_default", "price", 7);
 				deviceRoute();
 			} else {
 				layer.alert(response.message);
