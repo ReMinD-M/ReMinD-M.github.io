@@ -24,7 +24,12 @@ $(document).ready(function() {
 	}
 
 });
-
+function bindData(){
+	getUseTutorialLink();
+	getIdShareUrl();
+	getSubscribeUrlName();
+	fetchUserData();
+}
 function initialize() {
 	// defaultStyle();
 	setCookie("center_default", "initialize", 7);
@@ -36,10 +41,7 @@ function initialize() {
 			var script = document.createElement('script');
 			script.src = "js/order.js";
 			document.body.appendChild(script);
-			getUseTutorialLink();
-			getIdShareUrl();
-			getSubscribeUrlName();
-			fetchUserData();
+			bindData();
 			current_order(); // 假设current_order函数在全局作用域可用
 		})
 		.catch(error => console.error('Error loading the content:', error));
@@ -55,6 +57,7 @@ function price() {
 			// $('#nsk-body').css('background-color', 'mediumaquamarine'); // 你可以替换 '#f0f0f0' 为你想要的颜色代码 floralwhite
 			$('#nsk-right-panel-container').hide();
 			document.getElementById('iframe-content').innerHTML = data;
+			bindData();
 			
 		})
 		.catch(error => console.error('Error loading the content:', error));
@@ -83,6 +86,7 @@ function bill() {
 			$("#nsk-body-left").css("border-right", "none");
 			$('#nsk-right-panel-container').hide();
 			document.getElementById('iframe-content').innerHTML = data;
+			bindData();
 			getBillList();
 		})
 		.catch(error => console.error('Error loading the content:', error));
